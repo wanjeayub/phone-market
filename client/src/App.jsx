@@ -14,12 +14,13 @@ import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import CheckAuth from "./components/common/check-auth";
 import NotAllowed from "./pages/auth/noauth";
+import { Toaster } from "sonner";
+import { useSelector } from "react-redux";
 
 function App() {
-  const isAuthenticated = false;
-  const user = {
-    name: "wanje",
-  };
+  // check actual data from backend
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       {/* common components */}
@@ -31,6 +32,7 @@ function App() {
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
               <AuthLayout />
+              <Toaster />
             </CheckAuth>
           }
         >
@@ -51,7 +53,7 @@ function App() {
           <Route path={"dashboard"} element={<AdminDashboard />} />
         </Route>
         <Route
-          path="shop"
+          path="/shop"
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
               <ShoppingLayout />
