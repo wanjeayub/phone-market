@@ -16,6 +16,7 @@ import CheckAuth from "./components/common/check-auth";
 import NotAllowed from "./pages/auth/noauth";
 import { Toaster } from "sonner";
 import { useSelector } from "react-redux";
+import Index from "./pages/Home/Index";
 
 function App() {
   // check actual data from backend
@@ -27,6 +28,7 @@ function App() {
       {/* <h1>Header Component</h1> */}
 
       <Routes>
+        <Route path="/" element={<Index />} />
         <Route
           path={"/auth"}
           element={
@@ -44,6 +46,7 @@ function App() {
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
               <AdminLayout />
+              <Toaster />
             </CheckAuth>
           }
         >
@@ -57,6 +60,7 @@ function App() {
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
               <ShoppingLayout />
+              <Toaster />
             </CheckAuth>
           }
         >

@@ -4,6 +4,7 @@ import { loginUser } from "@/store/auth-slice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const initialState = {
   email: "",
@@ -17,11 +18,21 @@ function AuthLogin() {
 
   function onSubmit(ev) {
     ev.preventDefault();
-    dispatch(loginUser(formData)).then((data) => {
-      console.log(data);
-      if (data?.payload?.success) navigate("/shop/home");
-    });
+    dispatch(loginUser(formData))
+      .then((data) => {
+        if (data?.payload?.success) {
+          console.log(data);
+          toast.success(data?.payload?.message); // Use toast.success for success messages
+        } else {
+          console.log(data);
+          toast.error(data?.payload?.message); // Use toast.error for error messages
+        }
+      })
+      .catch((error) => {
+        toast.error("An error occurred during login"); // Handle any unexpected errors
+      });
   }
+
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">

@@ -2,7 +2,7 @@ import CommonForm from "@/components/common/form";
 import { RegisterFormControls } from "@/config";
 import { registerUSer } from "@/store/auth-slice";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -16,15 +16,17 @@ function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { error } = useSelector((state) => state.auth); // Get the error from the state
 
   function onSubmit(ev) {
     ev.preventDefault();
     dispatch(registerUSer(formData)).then((data) => {
-      console.log(data);
       if (data?.payload?.success) {
         toast.success(data?.payload?.message);
+        navigate("/auth/login");
+      } else if (data?.error) {
+        toast.error(data?.error?.message || "Registration failed"); // Display the error message
       }
-      navigate("/auth/login");
     });
   }
 
@@ -42,6 +44,8 @@ function AuthRegister() {
           Login
         </Link>
       </div>
+      {error && <p className="text-red-500">{error}</p>}{" "}
+      {/* Display the error message */}
       <CommonForm
         formControls={RegisterFormControls}
         buttonText={"Sign Up"}

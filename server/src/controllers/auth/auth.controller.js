@@ -1,11 +1,14 @@
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/user.model");
+const User = require("../../models/user.model.js");
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
   const { userName, email, password } = req.body;
+
+  const hashedPassword = bcrypt.hashSync(password, 12);
 
   try {
     // Check if user already exists
@@ -20,7 +23,7 @@ const registerUser = async (req, res) => {
     const user = await User.create({
       userName,
       email,
-      password,
+      password: hashedPassword,
     });
 
     res.status(201).json({
@@ -45,13 +48,14 @@ const loginUser = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+      return res.status(400).json({
+        success: false,
+        message: "User does not exist, create a new account",
+      });
     }
 
     // Compare passwords
-    const isMatch = await user.matchPassword(password);
+    const isMatch = bcrypt.compare(user.password, password);
     if (!isMatch) {
       return res
         .status(400)
@@ -64,7 +68,7 @@ const loginUser = async (req, res) => {
     });
     res
       .status(200)
-      .cookie(token, "token", { httpOnly: true, secure: false })
+      .cookie("token", token, { httpOnly: true, secure: false })
       .json({
         success: true,
         message: "User logged in successfully",
